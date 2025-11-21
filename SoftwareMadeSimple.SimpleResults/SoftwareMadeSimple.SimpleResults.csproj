@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Simple Result</Title>
+    <Description>The most straightforward Result object for C# you will find. This library is intended to work well with a object-oriented style of programming, rather than a functional style of programming.</Description>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>README.MD</PackageReadmeFile>
+    <PackageTags>result;results;either;maybe;functional;procedural</PackageTags>
+    <PackageReleaseNotes>The most straightforward Result object for C# you will find. This library is intended to work well with a object-oriented style of programming, rather than a functional style of programming.</PackageReleaseNotes>
+    <PackageLicenseFile>License.txt</PackageLicenseFile>
+    <Version>1.0.2</Version>
+    <PackageProjectUrl>https://github.com/ReneWiersma/SimpleResults</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\License.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.MD">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
