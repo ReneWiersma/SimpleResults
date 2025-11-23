@@ -2,57 +2,43 @@
 
 namespace SoftwareMadeSimple.SimpleResults;
 
-public sealed class Result<T, E>
+public sealed class Success<T, E>(T value) : Result<T, E>
 {
-    private readonly T? value;
-    private readonly E? error;
+    public override T Value { get; } = value;
 
-    private Result(T value)
-    {
-        IsSuccess = true;
-        this.value = value;
-    }
+    public override E Error => throw new InvalidOperationException("Cannot access Error when result is a success.");
 
-    private Result(E error)
-    {
-        IsSuccess = false;
-        this.error = error;
-    }
+    public override bool IsSuccess => true;
+}
 
-    public T Value
-    {
-        get
-        {
-            if (IsFailure)
-                throw new InvalidOperationException("Cannot access Value when result is a failure.");
+public sealed class Failure<T, E>(E error) : Result<T, E>
+{
+    public override T Value => throw new InvalidOperationException("Cannot access Value when result is a failure.");
 
-            return value!;
-        }
-    }
+    public override E Error { get; } = error;
 
-    public E Error
-    {
-        get
-        {
-            if (IsSuccess)
-                throw new InvalidOperationException("Cannot access Error when result is a success.");
+    public override bool IsSuccess => false;
+}
 
-            return error!;
-        }
-    }
+public abstract class Result<T, E>
+{
+    public abstract T Value { get; }
 
-    public static Result<T, E> Success(T value) => new(value);
-
-    public static Result<T, E> Failure(E error) => new(error);
+    public abstract E Error { get; }
 
     [MemberNotNullWhen(true, nameof(Value))]
     [MemberNotNullWhen(false, nameof(Error))]
-    public bool IsSuccess { get; }
+    public abstract bool IsSuccess { get; }
 
     [MemberNotNullWhen(true, nameof(Error))]
     [MemberNotNullWhen(false, nameof(Value))]
     public bool IsFailure => !IsSuccess;
 
-    public static implicit operator Result<T, E>(T value) => new(value);
-    public static implicit operator Result<T, E>(E error) => new(error);
+    public static Result<T, E> Success(T value) => new Success<T, E>(value);
+
+    public static Result<T, E> Failure(E error) => new Failure<T, E>(error);
+
+    public static implicit operator Result<T, E>(T value) => new Success<T, E>(value);
+
+    public static implicit operator Result<T, E>(E error) => new Failure<T, E>(error);
 }

@@ -8,75 +8,94 @@ namespace SoftwareMadeSimple.UnitTesting
         public void SameArgumentTypesSuccess()
         {
             var input = "This is a success";
-            var success = SimpleResults.Result<string, string>.Success(input);
+            var result = SimpleResults.Result<string, string>.Success(input);
 
-            using (Assert.EnterMultipleScope())
-            {
-                Assert.That(success.IsSuccess, Is.True);
-                Assert.That(success.IsFailure, Is.False);
-                Assert.That(success.Value, Is.EqualTo(input));
-                Assert.That(() => success.Error, Throws.InvalidOperationException);
-            }
+            AssertSuccess(input, result);
         }
 
         [Test]
         public void SameArgumentTypesError()
         {
-            var msg = "This is a failure";
-            var failure = SimpleResults.Result<string, string>.Failure(msg);
+            var input = "This is a failure";
+            var result = SimpleResults.Result<string, string>.Failure(input);
 
-            using (Assert.EnterMultipleScope())
-            {
-                Assert.That(failure.IsSuccess, Is.False);
-                Assert.That(failure.IsFailure, Is.True);
-                Assert.That(() => failure.Value, Throws.InvalidOperationException);
-                Assert.That(failure.Error, Is.EqualTo(msg));
-            }
+            AssertFailure(input, result);
         }
 
         [Test]
-        public void Success()
+        public void SuccessStaticCreator()
         {
             var input = 42;
             var result = SimpleResults.Result<int, SomeError>.Success(input);
 
-            using (Assert.EnterMultipleScope())
-            {
-                Assert.That(result.IsSuccess, Is.True);
-                Assert.That(result.IsFailure, Is.False);
-                Assert.That(result.Value, Is.EqualTo(input));
-                Assert.That(() => result.Error, Throws.InvalidOperationException);
-            }
+            AssertSuccess(input, result);
         }
 
         [Test]
-        public void Failure()
+        public void FailureStaticCreator()
         {
-            var result = SimpleResults.Result<int, SomeError>.Failure(new SomeError());
+            var input = new SomeError();
+            var result = SimpleResults.Result<int, SomeError>.Failure(input);
 
-            using (Assert.EnterMultipleScope())
-            {
-                Assert.That(result.IsSuccess, Is.False);
-                Assert.That(result.IsFailure, Is.True);
-                Assert.That(() => result.Value, Throws.InvalidOperationException);
-                Assert.That(result.Error, Is.EqualTo(new SomeError()));
-            }
+            AssertFailure(input, result);
         }
 
         [Test]
         public void ImplicitError()
         {
-            var failure = (SimpleResults.Result<int, SomeError>)new SomeError();
+            var input = new SomeError();
+            var result = (SimpleResults.Result<int, SomeError>)input;
 
-            Assert.That(failure.IsFailure, Is.True);
+            Assert.That(result.IsFailure, Is.True);
         }
 
         [Test]
         public void ImplicitSuccess()
         {
-            var success = (SimpleResults.Result<int, SomeError>)42;
+            var input = 42;
+            var result = (SimpleResults.Result<int, SomeError>)input;
 
-            Assert.That(success.IsSuccess, Is.True);
+            AssertSuccess(input, result);
+        }
+
+        [Test]
+        public void SuccessConstructor()
+        {
+            var input = 42;
+            var result = new SimpleResults.Success<int, SomeError>(input);
+
+            AssertSuccess(input, result);
+        }
+
+        [Test]
+        public void FailureConstructor()
+        {
+            var input = new SomeError();
+            var result = new SimpleResults.Failure<int, SomeError>(input);
+
+            AssertFailure(input, result);
+        }
+
+        private static void AssertSuccess<T, E>(T value, SimpleResults.Result<T, E> result)
+        {
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(result.IsSuccess, Is.True);
+                Assert.That(result.IsFailure, Is.False);
+                Assert.That(result.Value, Is.EqualTo(value));
+                Assert.That(() => result.Error, Throws.InvalidOperationException.With.Message.EqualTo("Cannot access Error when result is a success."));
+            }
+        }
+
+        private static void AssertFailure<T, E>(E error, SimpleResults.Result<T, E> result)
+        {
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(result.IsSuccess, Is.False);
+                Assert.That(result.IsFailure, Is.True);
+                Assert.That(() => result.Value, Throws.InvalidOperationException.With.Message.EqualTo("Cannot access Value when result is a failure."));
+                Assert.That(result.Error, Is.EqualTo(error));
+            }
         }
     }
 }

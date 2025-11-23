@@ -7,7 +7,6 @@ A simple, immutable result type for representing success or failure in C#.
 - Encapsulates either a success value (`T`) or an error (`E`).
 - Provides static factory methods for success and failure.
 - Implicit conversion from value or error.
-- Nullable properties for value and error.
 - `IsSuccess` and `IsFailure` properties for easy result checking.
 - Uses `[MemberNotNullWhen]` attributes for improved nullability analysis.
 
@@ -74,6 +73,17 @@ private static SimpleResults.Result<string, string> Validated(string? input)
         return SimpleResults.Result<string, string>.Failure("Input may not be null or whitespace");
 
     return SimpleResults.Result<string, string>.Success(input);
+}
+```
+
+Or simply use the constructor on the Success or Failure class:
+```csharp
+private static SimpleResults.Result<string, string> Validated(string? input)
+{
+    if (string.IsNullOrWhiteSpace(input))
+        return new SimpleResults.Failure<string, string>("Input may not be null or whitespace");
+
+    return new SimpleResults.Success<string, string>(input);
 }
 ```
 
